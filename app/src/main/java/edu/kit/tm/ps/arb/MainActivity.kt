@@ -6,10 +6,16 @@ import android.transition.Visibility
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
+import com.google.android.material.snackbar.Snackbar
 import org.json.JSONObject
 import org.json.JSONArray
+import java.io.BufferedOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         appendText("Running benchmarks...\n")
 
         val jsonResult = JSONObject()
+        jsonResult.put("nickname", findViewById<EditText>(R.id.editTextId).text)
         val ratchet = Ratchet()
 
         ratchet.benchmarkKeygen().let {
@@ -56,7 +63,27 @@ class MainActivity : AppCompatActivity() {
         }
 
         benchmarkStopped()
-        Log.i("benchmark", jsonResult.toString(2))
+        uploadResult(jsonResult)
+    }
+
+    private fun uploadResult(resultObject: JSONObject) {
+        val targetUrl = URL("https://kingdread.de/record-andro-bench.py")
+        try {
+            val connection = targetUrl.openConnection() as HttpURLConnection
+            connection.doOutput = true
+            connection.setChunkedStreamingMode(0)
+
+            val stream = BufferedOutputStream(connection.outputStream)
+            stream.write(resultObject.toString().toByteArray())
+            stream.flush()
+            connection.disconnect()
+
+            Snackbar.make(findViewById(R.id.button_run), "Benchmark uploaded", Snackbar.LENGTH_SHORT).show()
+        }
+        catch (e: Exception) {
+            Snackbar.make(findViewById(R.id.button_run), "Upload failed :-(", Snackbar.LENGTH_SHORT).show()
+            Log.e("BenchmarkUpload", "Couldn't upload", e)
+        }
     }
 
     private fun benchmarkStarted() {
