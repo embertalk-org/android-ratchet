@@ -69,12 +69,13 @@ class MainActivity : AppCompatActivity() {
     private fun uploadResult(resultObject: JSONObject) {
         val targetUrl = URL("https://i63schadt.tm.kit.edu/cgi-bin/record-android-benchmark.cgi")
         try {
+            val data = resultObject.toString().toByteArray()
             val connection = targetUrl.openConnection() as HttpURLConnection
             connection.doOutput = true
-            connection.setChunkedStreamingMode(0)
+            connection.setFixedLengthStreamingMode(data.size)
 
             val stream = BufferedOutputStream(connection.outputStream)
-            stream.write(resultObject.toString().toByteArray())
+            stream.write(data)
             stream.flush()
             connection.disconnect()
 
