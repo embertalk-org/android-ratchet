@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun uploadResult(resultObject: JSONObject) {
-        val targetUrl = URL("https://kingdread.de/record-andro-bench.py")
+        val targetUrl = URL("https://i63schadt.tm.kit.edu/cgi-bin/record-android-benchmark.cgi")
         try {
             val connection = targetUrl.openConnection() as HttpURLConnection
             connection.doOutput = true
