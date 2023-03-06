@@ -4,9 +4,9 @@ class Ratchet {
     init {
         System.loadLibrary("andro_ratchet")
     }
-    external fun benchmarkKeygen(): Double
-    external fun benchmarkPubRatchet(): Double
-    external fun benchmarkPrivRatchet(): Double
-    external fun benchmarkEncrypt(): Double
-    external fun benchmarkDecrypt(): Double
+    external fun benchmarkKeygen(): DoubleArray
+    external fun benchmarkPubRatchet(): DoubleArray
+    external fun benchmarkPrivRatchet(): DoubleArray
+    external fun benchmarkEncrypt(): DoubleArray
+    external fun benchmarkDecrypt(): DoubleArray
 }

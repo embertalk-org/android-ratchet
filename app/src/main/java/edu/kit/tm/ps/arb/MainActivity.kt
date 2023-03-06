@@ -8,6 +8,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import org.json.JSONObject
+import org.json.JSONArray
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,33 +22,41 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     private fun doBenchmarks() {
         benchmarkStarted()
         appendText("Running benchmarks...\n")
 
+        val jsonResult = JSONObject()
         val ratchet = Ratchet()
 
         ratchet.benchmarkKeygen().let {
-            appendText(String.format("Keygen: %.2f ms\n", it))
+            jsonResult.put("keygen", JSONArray(it))
+            appendText(String.format("Keygen: %.2f ms\n", it.average() / 1000000))
         }
 
         ratchet.benchmarkPubRatchet().let {
-            appendText(String.format("PubRatchet: %.2f ms\n", it))
+            jsonResult.put("pub_ratchet", JSONArray(it))
+            appendText(String.format("PubRatchet: %.2f ns\n", it.average()))
         }
 
         ratchet.benchmarkPrivRatchet().let {
-            appendText(String.format("PrivRatchet: %.2f ms\n", it))
+            jsonResult.put("priv_ratchet", JSONArray(it))
+            appendText(String.format("PrivRatchet: %.2f ms\n", it.average() / 1000000))
         }
 
         ratchet.benchmarkEncrypt().let {
-            appendText(String.format("Encrypt: %.2f ms\n", it))
+            jsonResult.put("encrypt", JSONArray(it))
+            appendText(String.format("Encrypt: %.2f ms\n", it.average() / 1000000))
         }
 
         ratchet.benchmarkDecrypt().let {
-            appendText(String.format("Decrypt: %.2f ms\n", it))
+            jsonResult.put("decrypt", JSONArray(it))
+            appendText(String.format("Decrypt: %.2f ms\n", it.average() / 1000000))
         }
 
         benchmarkStopped()
+        Log.i("benchmark", jsonResult.toString(2))
     }
 
     private fun benchmarkStarted() {
