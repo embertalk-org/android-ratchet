@@ -74,9 +74,11 @@ class MainActivity : AppCompatActivity() {
             connection.doOutput = true
             connection.setFixedLengthStreamingMode(data.size)
 
-            val stream = BufferedOutputStream(connection.outputStream)
-            stream.write(data)
-            stream.flush()
+            connection.outputStream.write(data)
+            connection.outputStream.flush()
+
+            // Read a byte just to make sure we've sent the request
+            connection.inputStream.read()
             connection.disconnect()
 
             Snackbar.make(findViewById(R.id.button_run), "Benchmark uploaded", Snackbar.LENGTH_SHORT).show()
